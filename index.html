@@ -1,0 +1,1717 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>#오운완</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --primary:#007FFF;
+  --secondary:#08B778;
+  --danger:#FF4D4D;
+  --bg:#FFFFFF;
+  --surface:#F4F6F9;
+  --surface2:#E8ECF1;
+  --text:#111111;
+  --muted:#777777;
+  --border:#DDE2EA;
+  --radius:16px;
+}
+body{
+  background:#D6E4F7;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
+  font-family:'Noto Sans KR',sans-serif;
+  color:var(--text);
+}
+.phone-frame{
+  width:393px;
+  height:852px;
+  background:var(--bg);
+  border-radius:54px;
+  overflow:hidden;
+  position:relative;
+  box-shadow:0 0 0 12px #d0d0d5,0 0 0 14px #b0b0b8,0 40px 80px rgba(0,0,0,.35),0 0 60px rgba(0,127,255,.12);
+  display:flex;
+  flex-direction:column;
+}
+.status-bar{
+  height:54px;
+  background:var(--bg);
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  padding:0 28px 8px;
+  flex-shrink:0;
+  z-index:10;
+}
+.status-time{font-family:'Oswald',sans-serif;font-size:17px;font-weight:600;letter-spacing:.5px}
+.status-icons{display:flex;gap:6px;align-items:center}
+.status-icons svg{width:16px;height:16px;fill:var(--text)}
+.screen-container{
+  flex:1;
+  overflow:hidden;
+  position:relative;
+}
+.screen{
+  position:absolute;
+  inset:0;
+  overflow-y:auto;
+  overflow-x:hidden;
+  display:none;
+  opacity:0;
+  transition:opacity .25s ease;
+  scrollbar-width:none;
+}
+.screen::-webkit-scrollbar{display:none}
+.screen.active{display:block;opacity:1}
+.bottom-nav{
+  height:84px;
+  background:rgba(255,255,255,.95);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  border-top:1px solid var(--border);
+  display:flex;
+  align-items:center;
+  justify-content:space-around;
+  padding:0 8px 16px;
+  flex-shrink:0;
+  z-index:100;
+}
+.nav-item{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:4px;
+  cursor:pointer;
+  padding:8px 16px;
+  border-radius:12px;
+  transition:all .2s;
+  position:relative;
+}
+.nav-item.active .nav-icon svg{stroke:var(--primary)}
+.nav-item.active .nav-label{color:var(--primary)}
+.nav-icon svg{width:24px;height:24px;stroke:var(--muted);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:stroke .2s}
+.nav-label{font-size:10px;color:var(--muted);font-weight:500;transition:color .2s}
+.nav-center{
+  width:56px;height:56px;
+  background:linear-gradient(135deg,var(--primary),#0055cc);
+  border-radius:18px;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 20px rgba(0,127,255,.5);
+  cursor:pointer;
+  transition:transform .15s,box-shadow .15s;
+  margin-bottom:8px;
+}
+.nav-center:active{transform:scale(.92);box-shadow:0 2px 10px rgba(0,127,255,.3)}
+.nav-center svg{width:26px;height:26px;stroke:#fff;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+
+/* ===== COMMON ===== */
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:16px 16px 8px}
+.section-title{font-size:16px;font-weight:700}
+.section-link{font-size:13px;color:var(--primary)}
+.chip{
+  display:inline-flex;align-items:center;
+  padding:4px 10px;
+  border-radius:20px;
+  font-size:11px;font-weight:600;
+  background:rgba(0,127,255,.2);
+  color:var(--primary);
+  white-space:nowrap;
+}
+.chip.green{background:rgba(8,183,120,.2);color:var(--secondary)}
+.chip.red{background:rgba(255,77,77,.2);color:var(--danger)}
+.avatar{border-radius:50%;object-fit:cover;background:var(--surface2)}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  padding:10px 18px;border-radius:12px;
+  font-family:'Noto Sans KR',sans-serif;font-weight:700;font-size:14px;
+  cursor:pointer;border:none;transition:all .15s;
+}
+.btn-primary{background:linear-gradient(135deg,var(--primary),#0055cc);color:#fff;box-shadow:0 4px 15px rgba(0,127,255,.4)}
+.btn-primary:active{transform:scale(.96)}
+.btn-outline{background:transparent;color:var(--primary);border:1.5px solid var(--primary)}
+
+/* ===== APP HEADER ===== */
+.app-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 16px;height:52px;
+  background:rgba(255,255,255,.92);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  position:sticky;top:0;z-index:50;
+  border-bottom:1px solid var(--border);
+}
+.app-logo{
+  font-family:'Bebas Neue',cursive;
+  font-size:26px;letter-spacing:2px;
+  background:linear-gradient(135deg,var(--primary),#00cfff);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.app-logo img{
+  height:24px;width:auto;display:block;
+}
+.header-actions{display:flex;gap:16px}
+.header-actions svg{width:22px;height:22px;stroke:var(--text);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;cursor:pointer}
+
+/* ===== STORIES ===== */
+.stories-row{display:flex;gap:12px;padding:12px 16px;overflow-x:auto;scrollbar-width:none}
+.stories-row::-webkit-scrollbar{display:none}
+.story-item{display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;flex-shrink:0}
+.story-ring{
+  width:64px;height:64px;border-radius:50%;
+  padding:2.5px;
+  background:var(--border);
+  transition:transform .15s;
+}
+.story-ring:active{transform:scale(.93)}
+.story-ring.done{background:linear-gradient(135deg,var(--primary),#00cfff)}
+.story-inner{
+  width:100%;height:100%;border-radius:50%;
+  background:var(--surface2);
+  border:2.5px solid var(--bg);
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;overflow:hidden;
+}
+.story-badge{
+  position:absolute;bottom:0;right:0;
+  font-size:14px;
+  background:var(--bg);
+  border-radius:50%;
+  width:18px;height:18px;
+  display:flex;align-items:center;justify-content:center;
+}
+.story-wrap{position:relative}
+.story-name{font-size:11px;color:var(--muted);font-weight:500;max-width:64px;text-align:center;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+
+/* ===== FEED CARD ===== */
+.feed-card{
+  margin:0 0 12px;
+  background:var(--surface);
+  border-radius:var(--radius);
+  overflow:hidden;
+  border:1px solid var(--border);
+}
+.card-header{display:flex;align-items:center;gap:10px;padding:12px 14px}
+.card-avatar{width:42px;height:42px;border-radius:50%;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.card-user-info{flex:1}
+.card-username{font-size:14px;font-weight:700}
+.card-handle{font-size:12px;color:var(--muted)}
+.card-streak{
+  display:flex;align-items:center;gap:4px;
+  background:rgba(255,77,77,.15);
+  border:1px solid rgba(255,77,77,.3);
+  padding:4px 10px;border-radius:20px;
+  font-size:12px;font-weight:700;color:var(--danger);
+}
+.card-image{
+  width:100%;aspect-ratio:4/3;
+  background:var(--surface2);
+  position:relative;overflow:hidden;
+}
+.card-image-bg{
+  width:100%;height:100%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:64px;
+}
+.card-image-bg img{
+  width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;
+}
+.card-image-overlay{
+  position:absolute;bottom:0;left:0;right:0;
+  padding:12px 14px;
+  background:linear-gradient(transparent,rgba(0,0,0,.85));
+}
+.card-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.card-stats{display:flex;gap:0;justify-content:space-around}
+.card-stat{
+  display:flex;flex-direction:column;align-items:center;gap:1px;
+  flex:1;
+}
+.stat-value{
+  font-family:'Oswald',sans-serif;
+  font-size:18px;font-weight:700;color:#fff;
+  letter-spacing:.5px;
+}
+.stat-label{font-size:10px;color:rgba(255,255,255,.6);font-weight:400}
+.card-actions{display:flex;align-items:center;gap:4px;padding:10px 14px}
+.action-btn{
+  display:flex;align-items:center;gap:5px;
+  padding:7px 12px;border-radius:10px;
+  background:rgba(0,0,0,.05);
+  cursor:pointer;border:none;color:var(--text);
+  font-family:'Noto Sans KR',sans-serif;
+  font-size:13px;font-weight:500;
+  transition:all .15s;flex:1;justify-content:center;
+}
+.action-btn:active{transform:scale(.93);background:rgba(0,0,0,.1)}
+.action-btn.cheerup.active{background:rgba(255,77,77,.2);color:var(--danger)}
+.routine-btn{
+  display:block;width:calc(100% - 28px);margin:0 14px 12px;
+  padding:9px;border-radius:10px;
+  background:rgba(0,127,255,.12);
+  border:1px solid rgba(0,127,255,.3);
+  color:var(--primary);
+  font-family:'Noto Sans KR',sans-serif;
+  font-size:13px;font-weight:700;
+  cursor:pointer;text-align:center;
+  transition:all .15s;
+}
+.routine-btn:active{background:rgba(0,127,255,.25)}
+
+/* ===== SHORTS ===== */
+.shorts-screen{
+  background:#000;
+  display:flex;flex-direction:column;
+  height:100%;
+}
+.shorts-filter{
+  display:flex;gap:8px;padding:10px 14px;
+  overflow-x:auto;scrollbar-width:none;
+  position:absolute;top:0;left:0;right:0;z-index:10;
+  background:linear-gradient(rgba(0,0,0,.6),transparent);
+}
+.shorts-filter::-webkit-scrollbar{display:none}
+.filter-chip{
+  padding:5px 14px;border-radius:20px;
+  font-size:12px;font-weight:600;
+  white-space:nowrap;cursor:pointer;
+  background:rgba(0,0,0,.25);color:rgba(255,255,255,.8);
+  border:none;font-family:'Noto Sans KR',sans-serif;
+  transition:all .2s;
+}
+.filter-chip.active{background:var(--primary);color:#fff}
+.shorts-card{
+  flex:1;position:relative;overflow:hidden;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+}
+.shorts-bg{
+  width:100%;height:100%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:80px;
+}
+.shorts-play{
+  position:absolute;
+  width:64px;height:64px;
+  background:rgba(0,0,0,.4);
+  backdrop-filter:blur(8px);
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+}
+.shorts-play svg{width:28px;height:28px;fill:#fff;margin-left:4px}
+.shorts-side{
+  position:absolute;right:12px;bottom:140px;
+  display:flex;flex-direction:column;gap:20px;
+  align-items:center;
+}
+.shorts-action{
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  cursor:pointer;
+}
+.shorts-action-icon{
+  width:46px;height:46px;border-radius:50%;
+  background:rgba(0,0,0,.35);
+  display:flex;align-items:center;justify-content:center;
+  transition:transform .15s;
+}
+.shorts-action-icon:active{transform:scale(.88)}
+.shorts-action-icon svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.shorts-action span{font-size:12px;color:rgba(255,255,255,.8);font-weight:600}
+.shorts-info{
+  position:absolute;left:14px;right:72px;bottom:40px;
+}
+.shorts-user{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.shorts-avatar{width:36px;height:36px;border-radius:50%;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:18px;border:2px solid #fff}
+.shorts-username{font-size:14px;font-weight:700}
+.shorts-title{font-size:15px;font-weight:700;line-height:1.4;margin-bottom:8px}
+.shorts-tags{display:flex;flex-wrap:wrap;gap:5px}
+.shorts-progress{
+  position:absolute;bottom:0;left:0;right:0;height:3px;background:rgba(255,255,255,.2);
+}
+.shorts-progress-bar{height:100%;background:var(--primary);transition:width .3s}
+.swipe-hint{
+  position:absolute;right:14px;top:50%;transform:translateY(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  animation:float 2s ease-in-out infinite;
+}
+@keyframes float{0%,100%{transform:translateY(-50%) translateY(0)}50%{transform:translateY(-50%) translateY(-8px)}}
+.swipe-hint svg{width:20px;height:20px;stroke:rgba(255,255,255,.4);fill:none;stroke-width:2;stroke-linecap:round}
+.swipe-hint span{font-size:10px;color:rgba(255,255,255,.3)}
+
+/* ===== RECORD ===== */
+.record-header{
+  padding:16px 16px 0;
+  text-align:center;
+}
+.record-title{font-size:22px;font-weight:900}
+.record-subtitle{font-size:13px;color:var(--muted);margin-top:4px}
+.category-grid{display:flex;gap:10px;padding:16px;overflow-x:auto;scrollbar-width:none}
+.category-grid::-webkit-scrollbar{display:none}
+.category-card{
+  flex-shrink:0;
+  width:80px;height:80px;
+  border-radius:16px;
+  background:var(--surface);
+  border:2px solid var(--border);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  cursor:pointer;transition:all .2s;
+  font-size:11px;font-weight:700;color:var(--muted);
+}
+.category-card.selected{border-color:var(--primary);background:rgba(0,127,255,.1);color:var(--primary)}
+.category-card span:first-child{font-size:28px}
+.routine-section{padding:0 16px}
+.routine-section .section-title{font-size:15px;font-weight:700;margin-bottom:10px}
+.routine-row{
+  display:flex;align-items:center;gap:8px;
+  padding:10px 12px;
+  background:var(--surface);
+  border-radius:12px;
+  margin-bottom:8px;
+  border:1px solid var(--border);
+}
+.routine-name{flex:1;font-size:13px;font-weight:700}
+.routine-details{display:flex;gap:6px}
+.routine-tag{
+  padding:3px 8px;border-radius:8px;
+  background:rgba(0,127,255,.15);color:var(--primary);
+  font-size:11px;font-weight:600;
+}
+.add-exercise-btn{
+  width:100%;padding:11px;
+  border-radius:12px;
+  background:rgba(0,0,0,.03);
+  border:1.5px dashed #B0BDD0;
+  color:var(--muted);
+  font-family:'Noto Sans KR',sans-serif;
+  font-size:13px;font-weight:600;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+}
+.photo-area{
+  margin:12px 16px;
+  height:120px;border-radius:14px;
+  background:var(--surface);
+  border:1.5px dashed #B0BDD0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+  cursor:pointer;
+  color:var(--muted);font-size:13px;font-weight:500;
+}
+.photo-area svg{width:28px;height:28px;stroke:var(--muted);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.hashtag-input{
+  margin:0 16px 12px;
+  padding:12px 14px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:12px;
+  color:var(--text);
+  font-family:'Noto Sans KR',sans-serif;
+  font-size:13px;
+  width:calc(100% - 32px);
+}
+.hashtag-input::placeholder{color:var(--muted)}
+.hashtag-input:focus{outline:none;border-color:var(--primary)}
+.record-cta{
+  margin:8px 16px 24px;
+  width:calc(100% - 32px);
+  padding:16px;
+  border-radius:16px;
+  background:linear-gradient(135deg,var(--primary),#0055cc);
+  color:#fff;
+  font-family:'Noto Sans KR',sans-serif;
+  font-size:17px;font-weight:900;
+  border:none;cursor:pointer;
+  box-shadow:0 8px 30px rgba(0,127,255,.5);
+  transition:all .15s;
+  letter-spacing:.5px;
+}
+.record-cta:active{transform:scale(.97);box-shadow:0 4px 15px rgba(0,127,255,.3)}
+
+/* ===== EXPLORE ===== */
+.search-bar{
+  margin:12px 16px;
+  display:flex;align-items:center;gap:10px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:10px 14px;
+}
+.search-bar svg{width:18px;height:18px;stroke:var(--muted);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.search-bar input{
+  flex:1;background:none;border:none;outline:none;
+  color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:14px;
+}
+.search-bar input::placeholder{color:var(--muted)}
+.explore-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 16px 12px}
+.explore-card{
+  border-radius:14px;overflow:hidden;
+  aspect-ratio:1;position:relative;cursor:pointer;
+  transition:transform .15s;
+}
+.explore-card:active{transform:scale(.96)}
+.explore-card-bg{
+  width:100%;height:100%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:50px;
+}
+.explore-card-overlay{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;justify-content:flex-end;
+  padding:12px;
+  background:linear-gradient(transparent 30%,rgba(0,0,0,.8));
+}
+.explore-cat-name{font-size:15px;font-weight:900}
+.explore-cat-count{font-size:11px;color:rgba(255,255,255,.6)}
+.routine-cards{display:flex;gap:10px;padding:0 16px 12px;overflow-x:auto;scrollbar-width:none}
+.routine-cards::-webkit-scrollbar{display:none}
+.routine-chip-card{
+  flex-shrink:0;width:180px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:14px;
+  cursor:pointer;transition:border-color .2s;
+}
+.routine-chip-card:active{border-color:var(--primary)}
+.rccard-name{font-size:14px;font-weight:700;margin-bottom:6px}
+.rccard-meta{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px}
+.rccard-saves{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:4px}
+.recommend-users{display:flex;flex-direction:column;gap:10px;padding:0 16px 16px}
+.recommend-user{
+  display:flex;align-items:center;gap:10px;
+  padding:12px;
+  background:var(--surface);
+  border-radius:14px;
+  border:1px solid var(--border);
+}
+.rec-avatar{width:44px;height:44px;border-radius:50%;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.rec-info{flex:1}
+.rec-name{font-size:14px;font-weight:700}
+.rec-handle{font-size:12px;color:var(--muted)}
+.follow-btn{
+  padding:6px 16px;border-radius:20px;
+  background:linear-gradient(135deg,var(--primary),#0055cc);
+  color:#fff;font-family:'Noto Sans KR',sans-serif;
+  font-size:12px;font-weight:700;border:none;cursor:pointer;
+  transition:all .15s;
+}
+.follow-btn:active{transform:scale(.93)}
+
+/* ===== MYPAGE ===== */
+.profile-section{
+  background:linear-gradient(180deg,rgba(0,127,255,.07) 0%,transparent 100%);
+  padding:16px 16px 20px;
+}
+.profile-top{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+.profile-avatar{
+  width:72px;height:72px;border-radius:50%;
+  background:var(--surface2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:36px;
+  border:3px solid var(--primary);
+  flex-shrink:0;
+}
+.profile-name{font-size:18px;font-weight:900}
+.profile-handle{font-size:13px;color:var(--muted);margin-bottom:6px}
+.profile-streak{
+  display:inline-flex;align-items:center;gap:5px;
+  background:rgba(255,77,77,.15);
+  border:1px solid rgba(255,77,77,.3);
+  padding:5px 12px;border-radius:20px;
+  font-family:'Oswald',sans-serif;font-size:16px;font-weight:700;color:var(--danger);
+}
+.profile-stats{display:flex;text-align:center}
+.profile-stat{flex:1}
+.profile-stat-value{
+  font-family:'Oswald',sans-serif;
+  font-size:22px;font-weight:700;
+}
+.profile-stat-label{font-size:11px;color:var(--muted)}
+.today-goal{
+  margin:0 16px 12px;
+  padding:16px;
+  background:var(--surface);
+  border-radius:16px;
+  border:1px solid var(--border);
+}
+.today-goal-title{font-size:11px;color:var(--primary);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.today-goal-text{font-size:17px;font-weight:900;margin-bottom:12px}
+.progress-bar{height:8px;background:#D8E2EE;border-radius:4px;overflow:hidden;margin-bottom:8px}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--primary),#00cfff);border-radius:4px;transition:width .5s}
+.progress-info{display:flex;justify-content:space-between;align-items:center}
+.progress-text{font-size:12px;color:var(--muted)}
+.complete-btn{
+  padding:6px 16px;border-radius:20px;
+  background:linear-gradient(135deg,var(--secondary),#06a369);
+  color:#fff;font-family:'Noto Sans KR',sans-serif;
+  font-size:12px;font-weight:700;border:none;cursor:pointer;
+}
+.calendar-section{margin:0 16px 16px}
+.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.cal-day-name{text-align:center;font-size:10px;color:var(--muted);font-weight:600;padding-bottom:4px}
+.cal-day{
+  aspect-ratio:1;
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:600;
+  cursor:pointer;
+  position:relative;
+  color:var(--muted);
+}
+.cal-day.done{
+  background:var(--primary);
+  color:#fff;
+  box-shadow:0 2px 8px rgba(0,127,255,.35);
+}
+.cal-day.today{
+  border:2px solid var(--primary);
+  color:var(--primary);
+  font-weight:900;
+}
+.my-routines{padding:0 16px}
+.routine-item{
+  display:flex;align-items:center;gap:10px;
+  padding:12px;background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:12px;margin-bottom:8px;cursor:pointer;
+}
+.routine-item-icon{font-size:24px}
+.routine-item-info{flex:1}
+.routine-item-name{font-size:14px;font-weight:700}
+.routine-item-meta{font-size:11px;color:var(--muted)}
+.routine-item-arrow svg{width:16px;height:16px;stroke:var(--muted);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.new-routine-btn{
+  width:100%;padding:12px;
+  background:rgba(0,127,255,.06);
+  border:1.5px dashed rgba(0,127,255,.35);
+  border-radius:12px;
+  color:var(--primary);font-family:'Noto Sans KR',sans-serif;
+  font-size:13px;font-weight:700;
+  cursor:pointer;margin-bottom:16px;
+}
+.posts-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;padding-bottom:16px}
+.post-thumb{
+  aspect-ratio:1;background:var(--surface2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:30px;cursor:pointer;
+  position:relative;overflow:hidden;
+}
+.post-thumb-overlay{
+  position:absolute;inset:0;
+  background:rgba(0,0,0,.4);
+  display:none;align-items:center;justify-content:center;
+}
+
+/* ===== MODAL ===== */
+.modal-backdrop{
+  position:absolute;inset:0;
+  background:rgba(0,0,0,.6);
+  display:flex;align-items:flex-end;
+  z-index:200;
+  opacity:0;pointer-events:none;
+  transition:opacity .3s;
+  backdrop-filter:blur(4px);
+}
+.modal-backdrop.visible{opacity:1;pointer-events:all}
+.modal-sheet{
+  width:100%;
+  background:#FFFFFF;
+  border-radius:24px 24px 0 0;
+  padding:16px;
+  transform:translateY(100%);
+  transition:transform .35s cubic-bezier(.32,.72,0,1);
+  max-height:70%;
+  overflow-y:auto;
+}
+.modal-sheet::-webkit-scrollbar{display:none}
+.modal-backdrop.visible .modal-sheet{transform:translateY(0)}
+.modal-handle{
+  width:36px;height:4px;border-radius:2px;
+  background:var(--border);
+  margin:0 auto 16px;
+}
+.modal-title{font-size:17px;font-weight:900;margin-bottom:14px}
+.routine-detail-item{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 0;border-bottom:1px solid var(--border);
+}
+.routine-detail-item:last-child{border-bottom:none}
+.rd-num{
+  width:28px;height:28px;border-radius:8px;
+  background:rgba(0,127,255,.15);
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;color:var(--primary);flex-shrink:0;
+}
+.rd-name{flex:1;font-size:14px;font-weight:700}
+.rd-sets{display:flex;flex-wrap:wrap;gap:5px}
+.rd-set-chip{
+  padding:3px 9px;border-radius:8px;
+  background:#EEF1F6;
+  font-size:11px;font-weight:600;color:#555;
+}
+
+/* ===== SUCCESS TOAST ===== */
+.toast{
+  position:absolute;top:80px;left:50%;transform:translateX(-50%) translateY(-20px);
+  background:var(--secondary);
+  color:#fff;
+  padding:10px 20px;border-radius:20px;
+  font-size:13px;font-weight:700;
+  z-index:300;
+  opacity:0;transition:all .3s;
+  white-space:nowrap;
+  box-shadow:0 4px 20px rgba(8,183,120,.4);
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ===== EXPLORE COLOR THEMES ===== */
+.explore-card-bg{background-size:cover;background-position:center;font-size:0 !important}
+.explore-card:nth-child(1) .explore-card-bg{background-image:url('https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=300&h=300&fit=crop&q=80')}
+.explore-card:nth-child(2) .explore-card-bg{background-image:url('https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?w=300&h=300&fit=crop&q=80')}
+.explore-card:nth-child(3) .explore-card-bg{background-image:url('https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=300&h=300&fit=crop&q=80')}
+.explore-card:nth-child(4) .explore-card-bg{background-image:url('https://images.unsplash.com/photo-1549576490-b0b4f9e5b9f5?w=300&h=300&fit=crop&q=80')}
+.explore-card:nth-child(5) .explore-card-bg{background-image:url('https://images.unsplash.com/photo-1522163182402-834f871fd851?w=300&h=300&fit=crop&q=80')}
+.explore-card:nth-child(6) .explore-card-bg{background-image:url('https://images.unsplash.com/photo-1530549387789-4c1017266635?w=300&h=300&fit=crop&q=80')}
+
+/* Shorts BGs */
+.shorts-bg{position:absolute;inset:0;background-size:cover;background-position:center;background-repeat:no-repeat}
+.shorts-bg.s1{background-image:linear-gradient(rgba(0,0,0,.35),rgba(0,0,0,.5)),url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=420&h=750&fit=crop&q=80')}
+.shorts-bg.s2{background-image:linear-gradient(rgba(0,0,0,.35),rgba(0,0,0,.5)),url('https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?w=420&h=750&fit=crop&q=80')}
+.shorts-bg.s3{background-image:linear-gradient(rgba(0,0,0,.35),rgba(0,0,0,.5)),url('https://images.unsplash.com/photo-1517963879433-6ad2a56fcd82?w=420&h=750&fit=crop&q=80')}
+.shorts-bg.s4{background-image:linear-gradient(rgba(0,0,0,.35),rgba(0,0,0,.5)),url('https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=420&h=750&fit=crop&q=80')}
+.shorts-bg.s5{background-image:linear-gradient(rgba(0,0,0,.35),rgba(0,0,0,.5)),url('https://images.unsplash.com/photo-1502904550040-7534597429ae?w=420&h=750&fit=crop&q=80')}
+
+/* ===== SPLASH ===== */
+#splash{
+  position:absolute;inset:0;
+  background:#fff;
+  z-index:999;
+  opacity:1;
+  transition:opacity .5s ease;
+  border-radius:54px;
+}
+#splash img{
+  position:absolute;
+  top:40%;
+  left:53%;
+  transform:translate(-50%,-50%);
+  width:96px;height:auto;
+  animation:splashPop .6s cubic-bezier(.34,1.56,.64,1) both;
+}
+@keyframes splashPop{
+  from{transform:scale(.7);opacity:0}
+  to{transform:scale(1);opacity:1}
+}
+#splash.hide{opacity:0;pointer-events:none}
+
+/* Feed card BGs */
+.feed-bg-1{background:linear-gradient(135deg,#1a4a6e,#2d7a5a)}
+.feed-bg-2{background:linear-gradient(135deg,#6e2a1a,#8a3a2a)}
+.feed-bg-3{background:linear-gradient(135deg,#1a2a6e,#2a3a8e)}
+.feed-bg-4{background:linear-gradient(135deg,#5a1a6e,#7a2a5a)}
+</style>
+</head>
+<body>
+<div class="phone-frame">
+  <!-- Splash Screen -->
+  <div id="splash">
+    <img src="splash_logo.svg" alt="#오운완">
+  </div>
+
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <div class="status-time">9:41</div>
+    <div class="status-icons">
+      <svg viewBox="0 0 24 24"><path d="M1 6l5 5L12 4l5 7 5-5"/></svg>
+      <svg viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0M1.42 9a16 16 0 0 1 21.16 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01"/></svg>
+      <svg viewBox="0 0 24 24"><rect x="2" y="7" width="18" height="11" rx="2"/><path d="M22 11v4"/></svg>
+    </div>
+  </div>
+
+  <!-- Screen Container -->
+  <div class="screen-container">
+
+    <!-- TAB 1: HOME FEED -->
+    <div class="screen active" id="screen-home">
+      <div class="app-header">
+        <div class="app-logo"><img src="logo.svg" alt="#오운완"></div>
+        <div class="header-actions">
+          <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </div>
+      </div>
+
+      <!-- Stories -->
+      <div class="stories-row">
+        <div class="story-item">
+          <div class="story-wrap">
+            <div class="story-ring done">
+              <div class="story-inner">💪</div>
+            </div>
+            <div class="story-badge">🔥</div>
+          </div>
+          <span class="story-name">지훈</span>
+        </div>
+        <div class="story-item">
+          <div class="story-wrap">
+            <div class="story-ring done">
+              <div class="story-inner">🏃</div>
+            </div>
+            <div class="story-badge">🔥</div>
+          </div>
+          <span class="story-name">소연</span>
+        </div>
+        <div class="story-item">
+          <div class="story-wrap">
+            <div class="story-ring done">
+              <div class="story-inner">🏋️</div>
+            </div>
+            <div class="story-badge">🔥</div>
+          </div>
+          <span class="story-name">민준</span>
+        </div>
+        <div class="story-item">
+          <div class="story-wrap">
+            <div class="story-ring">
+              <div class="story-inner">🧘</div>
+            </div>
+          </div>
+          <span class="story-name">예린</span>
+        </div>
+        <div class="story-item">
+          <div class="story-wrap">
+            <div class="story-ring">
+              <div class="story-inner">🚴</div>
+            </div>
+          </div>
+          <span class="story-name">현우</span>
+        </div>
+        <div class="story-item">
+          <div class="story-wrap">
+            <div class="story-ring done">
+              <div class="story-inner">⚡</div>
+            </div>
+            <div class="story-badge">🔥</div>
+          </div>
+          <span class="story-name">지아</span>
+        </div>
+      </div>
+
+      <!-- Feed Cards -->
+      <div style="padding:0 12px">
+
+        <!-- Card 1: 김지훈 -->
+        <div class="feed-card">
+          <div class="card-header">
+            <div class="card-avatar feed-bg-1">💪</div>
+            <div class="card-user-info">
+              <div class="card-username">김지훈</div>
+              <div class="card-handle">@jihun_lifts</div>
+            </div>
+            <div class="card-streak">🔥 47일</div>
+          </div>
+          <div class="card-image">
+            <div class="card-image-bg feed-bg-1">
+              <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=500&h=375&fit=crop&q=80" alt="헬스 운동">
+            </div>
+            <div class="card-image-overlay">
+              <div class="card-tags">
+                <span class="chip">#데드리프트</span>
+                <span class="chip">#등운동</span>
+                <span class="chip">#헬스</span>
+                <span class="chip">#이두</span>
+              </div>
+              <div class="card-stats">
+                <div class="card-stat">
+                  <div class="stat-value">⏱ 72<span style="font-size:11px;font-family:'Noto Sans KR'">분</span></div>
+                  <div class="stat-label">운동시간</div>
+                </div>
+                <div class="card-stat" style="border-left:1px solid rgba(255,255,255,.1);border-right:1px solid rgba(255,255,255,.1)">
+                  <div class="stat-value">🏋️ 4,200<span style="font-size:11px;font-family:'Noto Sans KR'">kg</span></div>
+                  <div class="stat-label">총볼륨</div>
+                </div>
+                <div class="card-stat">
+                  <div class="stat-value">🔥 680<span style="font-size:11px;font-family:'Noto Sans KR'">kcal</span></div>
+                  <div class="stat-label">칼로리</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card-actions">
+            <button class="action-btn cheerup" onclick="toggleCheerup(this,142)">💪 142</button>
+            <button class="action-btn" onclick="">💬 23</button>
+            <button class="action-btn" onclick="">🔗 공유</button>
+          </div>
+          <button class="routine-btn" onclick="openRoutineModal('jihun')">📋 루틴 보기</button>
+        </div>
+
+        <!-- Card 2: 박소연 -->
+        <div class="feed-card">
+          <div class="card-header">
+            <div class="card-avatar feed-bg-2">🏃</div>
+            <div class="card-user-info">
+              <div class="card-username">박소연</div>
+              <div class="card-handle">@soyeon_run</div>
+            </div>
+            <div class="card-streak">🔥 12일</div>
+          </div>
+          <div class="card-image">
+            <div class="card-image-bg feed-bg-2">
+              <img src="https://images.unsplash.com/photo-1571008887538-b36bb32f4571?w=500&h=375&fit=crop&q=80" alt="러닝">
+            </div>
+            <div class="card-image-overlay">
+              <div class="card-tags">
+                <span class="chip">#아침러닝</span>
+                <span class="chip">#5K</span>
+                <span class="chip green">#페이스UP</span>
+              </div>
+              <div class="card-stats">
+                <div class="card-stat">
+                  <div class="stat-value">⏱ 28<span style="font-size:11px;font-family:'Noto Sans KR'">분32초</span></div>
+                  <div class="stat-label">운동시간</div>
+                </div>
+                <div class="card-stat" style="border-left:1px solid rgba(255,255,255,.1);border-right:1px solid rgba(255,255,255,.1)">
+                  <div class="stat-value">🏃 5.2<span style="font-size:11px;font-family:'Noto Sans KR'">km</span></div>
+                  <div class="stat-label">거리</div>
+                </div>
+                <div class="card-stat">
+                  <div class="stat-value">🔥 310<span style="font-size:11px;font-family:'Noto Sans KR'">kcal</span></div>
+                  <div class="stat-label">칼로리</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="padding:4px 14px 8px;font-size:12px;color:var(--muted)">
+            평균 페이스 <span style="color:var(--secondary);font-weight:700;font-family:'Oswald'">5'29"</span>/km · 최고속도 <span style="color:var(--primary);font-weight:700;font-family:'Oswald'">12.4</span>km/h
+          </div>
+          <div class="card-actions">
+            <button class="action-btn cheerup" onclick="toggleCheerup(this,89)">💪 89</button>
+            <button class="action-btn">💬 14</button>
+            <button class="action-btn">🔗 공유</button>
+          </div>
+          <button class="routine-btn" onclick="openRoutineModal('soyeon')">📋 러닝 기록 보기</button>
+        </div>
+
+        <!-- Card 3: 이민준 -->
+        <div class="feed-card">
+          <div class="card-header">
+            <div class="card-avatar feed-bg-3">🏋️</div>
+            <div class="card-user-info">
+              <div class="card-username">이민준</div>
+              <div class="card-handle">@minjun_cf</div>
+            </div>
+            <div class="card-streak">🔥 33일</div>
+          </div>
+          <div class="card-image">
+            <div class="card-image-bg feed-bg-3">
+              <img src="https://images.unsplash.com/photo-1517963879433-6ad2a56fcd82?w=500&h=375&fit=crop&q=80" alt="크로스핏">
+            </div>
+            <div class="card-image-overlay">
+              <div class="card-tags">
+                <span class="chip">#크로스핏</span>
+                <span class="chip red">#WOD</span>
+                <span class="chip">#AMRAP</span>
+              </div>
+              <div class="card-stats">
+                <div class="card-stat">
+                  <div class="stat-value">⏱ 45<span style="font-size:11px;font-family:'Noto Sans KR'">분</span></div>
+                  <div class="stat-label">운동시간</div>
+                </div>
+                <div class="card-stat" style="border-left:1px solid rgba(255,255,255,.1);border-right:1px solid rgba(255,255,255,.1)">
+                  <div class="stat-value">💥 18<span style="font-size:11px;font-family:'Noto Sans KR'">라운드</span></div>
+                  <div class="stat-label">완료 라운드</div>
+                </div>
+                <div class="card-stat">
+                  <div class="stat-value">🔥 520<span style="font-size:11px;font-family:'Noto Sans KR'">kcal</span></div>
+                  <div class="stat-label">칼로리</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card-actions">
+            <button class="action-btn cheerup" onclick="toggleCheerup(this,201)">💪 201</button>
+            <button class="action-btn">💬 37</button>
+            <button class="action-btn">🔗 공유</button>
+          </div>
+          <button class="routine-btn" onclick="openRoutineModal('minjun')">📋 루틴 보기</button>
+        </div>
+
+        <!-- Card 4: 최예린 -->
+        <div class="feed-card">
+          <div class="card-header">
+            <div class="card-avatar feed-bg-4">🧘</div>
+            <div class="card-user-info">
+              <div class="card-username">최예린</div>
+              <div class="card-handle">@yerin_yoga</div>
+            </div>
+            <div class="card-streak">🔥 8일</div>
+          </div>
+          <div class="card-image">
+            <div class="card-image-bg feed-bg-4">
+              <img src="https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=500&h=375&fit=crop&q=80" alt="요가">
+            </div>
+            <div class="card-image-overlay">
+              <div class="card-tags">
+                <span class="chip">#모닝요가</span>
+                <span class="chip">#플로우</span>
+                <span class="chip green">#마음챙김</span>
+              </div>
+              <div class="card-stats">
+                <div class="card-stat">
+                  <div class="stat-value">⏱ 40<span style="font-size:11px;font-family:'Noto Sans KR'">분</span></div>
+                  <div class="stat-label">운동시간</div>
+                </div>
+                <div class="card-stat" style="border-left:1px solid rgba(255,255,255,.1);border-right:1px solid rgba(255,255,255,.1)">
+                  <div class="stat-value">🌿 8<span style="font-size:11px;font-family:'Noto Sans KR'">동작</span></div>
+                  <div class="stat-label">완료 포즈</div>
+                </div>
+                <div class="card-stat">
+                  <div class="stat-value">🔥 220<span style="font-size:11px;font-family:'Noto Sans KR'">kcal</span></div>
+                  <div class="stat-label">칼로리</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card-actions">
+            <button class="action-btn cheerup" onclick="toggleCheerup(this,56)">💪 56</button>
+            <button class="action-btn">💬 8</button>
+            <button class="action-btn">🔗 공유</button>
+          </div>
+          <button class="routine-btn" onclick="openRoutineModal('yerin')">📋 루틴 보기</button>
+        </div>
+
+        <div style="height:20px"></div>
+      </div>
+    </div>
+
+    <!-- TAB 2: SHORTS -->
+    <div class="screen" id="screen-shorts" style="overflow:hidden">
+      <div style="position:relative;height:100%;background:#000">
+        <div class="shorts-filter">
+          <button class="filter-chip active" onclick="setFilter(this)">전체</button>
+          <button class="filter-chip" onclick="setFilter(this)">헬스</button>
+          <button class="filter-chip" onclick="setFilter(this)">러닝</button>
+          <button class="filter-chip" onclick="setFilter(this)">요가</button>
+          <button class="filter-chip" onclick="setFilter(this)">크로스핏</button>
+        </div>
+        <div class="shorts-card" onclick="nextShort()">
+          <div class="shorts-bg s1" id="shorts-bg"></div>
+          <div class="shorts-play">
+            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          </div>
+        </div>
+        <div class="shorts-side">
+          <div class="shorts-action">
+            <div class="shorts-action-icon" onclick="toggleShortsCheerup(this,event)">
+              <svg viewBox="0 0 24 24"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/></svg>
+            </div>
+            <span id="shorts-cheerup">1.2k</span>
+          </div>
+          <div class="shorts-action">
+            <div class="shorts-action-icon">
+              <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <span>댓글</span>
+          </div>
+          <div class="shorts-action">
+            <div class="shorts-action-icon">
+              <svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            </div>
+            <span>공유</span>
+          </div>
+          <div class="shorts-action">
+            <div class="shorts-action-icon">
+              <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <span>저장</span>
+          </div>
+        </div>
+        <div class="shorts-info">
+          <div class="shorts-user">
+            <div class="shorts-avatar" id="shorts-avatar">💪</div>
+            <div class="shorts-username" id="shorts-uname">@jihun_lifts</div>
+          </div>
+          <div class="shorts-title" id="shorts-title">데드리프트 140kg 신기록 달성 🎉 오늘도 오운완!</div>
+          <div class="shorts-tags" id="shorts-tags">
+            <span class="chip">#데드리프트</span>
+            <span class="chip">#헬스</span>
+            <span class="chip red">#신기록</span>
+          </div>
+        </div>
+        <div class="shorts-progress">
+          <div class="shorts-progress-bar" id="shorts-pb" style="width:35%"></div>
+        </div>
+        <div style="position:absolute;top:50%;right:10px;transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;gap:4px;opacity:.35">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><polyline points="18 15 12 9 6 15"/></svg>
+          <span style="font-size:10px;color:#fff">위로</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: RECORD -->
+    <div class="screen" id="screen-record">
+      <div class="app-header">
+        <div class="app-logo" style="font-size:20px">오운완 기록</div>
+        <div class="header-actions">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+      </div>
+      <div class="record-header">
+        <div style="font-size:32px;margin-bottom:8px">💪</div>
+        <div class="record-title">오늘의 운동을 기록해요</div>
+        <div class="record-subtitle">매일 기록하면 🔥 스트릭이 쌓여요</div>
+      </div>
+
+      <!-- Category Select -->
+      <div class="section-header" style="padding-top:20px">
+        <div class="section-title">운동 카테고리</div>
+      </div>
+      <div class="category-grid">
+        <div class="category-card selected" onclick="selectCat(this)">
+          <span>🏋️</span>
+          <span>헬스</span>
+        </div>
+        <div class="category-card" onclick="selectCat(this)">
+          <span>🏃</span>
+          <span>러닝</span>
+        </div>
+        <div class="category-card" onclick="selectCat(this)">
+          <span>🧘</span>
+          <span>요가</span>
+        </div>
+        <div class="category-card" onclick="selectCat(this)">
+          <span>⚡</span>
+          <span>크로스핏</span>
+        </div>
+        <div class="category-card" onclick="selectCat(this)">
+          <span>🚴</span>
+          <span>사이클</span>
+        </div>
+        <div class="category-card" onclick="selectCat(this)">
+          <span>🤸</span>
+          <span>기타</span>
+        </div>
+      </div>
+
+      <!-- Routine -->
+      <div class="routine-section">
+        <div class="section-title">루틴 추가</div>
+        <div class="routine-row">
+          <div class="routine-name">벤치프레스</div>
+          <div class="routine-details">
+            <span class="routine-tag">3세트</span>
+            <span class="routine-tag">10회</span>
+            <span class="routine-tag">80kg</span>
+          </div>
+        </div>
+        <div class="routine-row">
+          <div class="routine-name">스쿼트</div>
+          <div class="routine-details">
+            <span class="routine-tag">4세트</span>
+            <span class="routine-tag">8회</span>
+            <span class="routine-tag">100kg</span>
+          </div>
+        </div>
+        <button class="add-exercise-btn" onclick="addExercise()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          운동 추가
+        </button>
+      </div>
+
+      <!-- Photo -->
+      <div class="photo-area">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        <span>사진 첨부하기</span>
+        <span style="font-size:11px;color:var(--muted)">오운완 인증샷을 올려보세요</span>
+      </div>
+
+      <!-- Hashtag -->
+      <input class="hashtag-input" placeholder="#해시태그 입력 (예: #데드리프트 #헬스 #오운완)" />
+
+      <!-- CTA -->
+      <button class="record-cta" onclick="submitRecord()">🏆 오운완 완료!</button>
+      <div style="height:20px"></div>
+    </div>
+
+    <!-- TAB 4: EXPLORE -->
+    <div class="screen" id="screen-explore">
+      <div class="app-header">
+        <div class="app-logo" style="font-size:20px">탐색</div>
+      </div>
+
+      <!-- Search -->
+      <div class="search-bar">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input placeholder="운동, 루틴, 유저 검색..." />
+      </div>
+
+      <!-- Category Grid -->
+      <div class="section-header">
+        <div class="section-title">운동 카테고리</div>
+      </div>
+      <div class="explore-grid">
+        <div class="explore-card">
+          <div class="explore-card-bg">🏋️</div>
+          <div class="explore-card-overlay">
+            <div class="explore-cat-name">헬스</div>
+            <div class="explore-cat-count">게시물 24.8k</div>
+          </div>
+        </div>
+        <div class="explore-card">
+          <div class="explore-card-bg">🏃</div>
+          <div class="explore-card-overlay">
+            <div class="explore-cat-name">러닝</div>
+            <div class="explore-cat-count">게시물 18.2k</div>
+          </div>
+        </div>
+        <div class="explore-card">
+          <div class="explore-card-bg">🧘</div>
+          <div class="explore-card-overlay">
+            <div class="explore-cat-name">요가</div>
+            <div class="explore-cat-count">게시물 9.4k</div>
+          </div>
+        </div>
+        <div class="explore-card">
+          <div class="explore-card-bg">⚡</div>
+          <div class="explore-card-overlay">
+            <div class="explore-cat-name">크로스핏</div>
+            <div class="explore-cat-count">게시물 7.1k</div>
+          </div>
+        </div>
+        <div class="explore-card">
+          <div class="explore-card-bg">🧗</div>
+          <div class="explore-card-overlay">
+            <div class="explore-cat-name">클라이밍</div>
+            <div class="explore-cat-count">게시물 3.6k</div>
+          </div>
+        </div>
+        <div class="explore-card">
+          <div class="explore-card-bg">🏊</div>
+          <div class="explore-card-overlay">
+            <div class="explore-cat-name">수영</div>
+            <div class="explore-cat-count">게시물 5.9k</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Popular Routines -->
+      <div class="section-header">
+        <div class="section-title">🔥 인기 루틴</div>
+        <span class="section-link">더보기</span>
+      </div>
+      <div class="routine-cards">
+        <div class="routine-chip-card">
+          <div class="rccard-name">5일 분할 풀바디</div>
+          <div class="rccard-meta">
+            <span class="chip">5종목</span>
+            <span class="chip">90분</span>
+          </div>
+          <div class="rccard-saves">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+            2,841명 저장
+          </div>
+        </div>
+        <div class="routine-chip-card">
+          <div class="rccard-name">10km 러닝 완주 플랜</div>
+          <div class="rccard-meta">
+            <span class="chip">4주</span>
+            <span class="chip">주5회</span>
+          </div>
+          <div class="rccard-saves">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+            1,203명 저장
+          </div>
+        </div>
+        <div class="routine-chip-card">
+          <div class="rccard-name">모닝 요가 플로우</div>
+          <div class="rccard-meta">
+            <span class="chip">8동작</span>
+            <span class="chip">30분</span>
+          </div>
+          <div class="rccard-saves">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+            986명 저장
+          </div>
+        </div>
+        <div class="routine-chip-card">
+          <div class="rccard-name">크로스핏 입문 WOD</div>
+          <div class="rccard-meta">
+            <span class="chip">6종목</span>
+            <span class="chip">45분</span>
+          </div>
+          <div class="rccard-saves">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+            752명 저장
+          </div>
+        </div>
+      </div>
+
+      <!-- Recommend Users -->
+      <div class="section-header">
+        <div class="section-title">추천 유저</div>
+        <span class="section-link">더보기</span>
+      </div>
+      <div class="recommend-users">
+        <div class="recommend-user">
+          <div class="rec-avatar">💪</div>
+          <div class="rec-info">
+            <div class="rec-name">김지훈</div>
+            <div class="rec-handle">@jihun_lifts · 🔥47일 · 헬스</div>
+          </div>
+          <button class="follow-btn" onclick="toggleFollow(this)">팔로우</button>
+        </div>
+        <div class="recommend-user">
+          <div class="rec-avatar">🏃</div>
+          <div class="rec-info">
+            <div class="rec-name">박소연</div>
+            <div class="rec-handle">@soyeon_run · 🔥12일 · 러닝</div>
+          </div>
+          <button class="follow-btn" onclick="toggleFollow(this)">팔로우</button>
+        </div>
+        <div class="recommend-user">
+          <div class="rec-avatar">⚡</div>
+          <div class="rec-info">
+            <div class="rec-name">이민준</div>
+            <div class="rec-handle">@minjun_cf · 🔥33일 · 크로스핏</div>
+          </div>
+          <button class="follow-btn" onclick="toggleFollow(this)">팔로우</button>
+        </div>
+      </div>
+      <div style="height:20px"></div>
+    </div>
+
+    <!-- TAB 5: MYPAGE -->
+    <div class="screen" id="screen-mypage">
+      <!-- Profile -->
+      <div class="profile-section">
+        <div class="profile-top">
+          <div class="profile-avatar">😤</div>
+          <div>
+            <div class="profile-name">나 (홍길동)</div>
+            <div class="profile-handle">@honggildong_fit</div>
+            <div class="profile-streak">🔥 23일 연속 오운완</div>
+          </div>
+          <div style="margin-left:auto">
+            <button class="btn btn-outline" style="padding:7px 14px;font-size:12px">편집</button>
+          </div>
+        </div>
+        <div class="profile-stats">
+          <div class="profile-stat">
+            <div class="profile-stat-value" style="font-family:'Oswald',sans-serif">284</div>
+            <div class="profile-stat-label">팔로워</div>
+          </div>
+          <div class="profile-stat">
+            <div class="profile-stat-value" style="font-family:'Oswald',sans-serif">147</div>
+            <div class="profile-stat-label">팔로잉</div>
+          </div>
+          <div class="profile-stat">
+            <div class="profile-stat-value" style="font-family:'Oswald',sans-serif;color:var(--primary)">62</div>
+            <div class="profile-stat-label">오운완</div>
+          </div>
+          <div class="profile-stat">
+            <div class="profile-stat-value" style="font-family:'Oswald',sans-serif;color:var(--danger)">🔥23</div>
+            <div class="profile-stat-label">스트릭</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Today's Goal -->
+      <div class="today-goal">
+        <div class="today-goal-title">오늘 딱 이것만!</div>
+        <div class="today-goal-text">🏋️ 헬스 60분 + 데드리프트 PR 도전</div>
+        <div class="progress-bar"><div class="progress-fill" style="width:68%"></div></div>
+        <div class="progress-info">
+          <span class="progress-text">68% 완료 · 41분 남음</span>
+          <button class="complete-btn">✓ 완료</button>
+        </div>
+      </div>
+
+      <!-- Monthly Calendar -->
+      <div class="calendar-section">
+        <div class="section-header" style="padding:0 0 10px">
+          <div class="section-title">📅 3월 달성 캘린더</div>
+          <span style="font-family:'Oswald',sans-serif;color:var(--primary);font-size:16px;font-weight:700">23/31일</span>
+        </div>
+        <div class="calendar-grid">
+          <div class="cal-day-name">일</div><div class="cal-day-name">월</div><div class="cal-day-name">화</div>
+          <div class="cal-day-name">수</div><div class="cal-day-name">목</div><div class="cal-day-name">금</div>
+          <div class="cal-day-name">토</div>
+          <!-- Week 1 -->
+          <div class="cal-day" style="color:var(--muted)"></div>
+          <div class="cal-day" style="color:var(--muted)"></div>
+          <div class="cal-day" style="color:var(--muted)"></div>
+          <div class="cal-day" style="color:var(--muted)"></div>
+          <div class="cal-day" style="color:var(--muted)"></div>
+          <div class="cal-day" style="color:var(--muted)"></div>
+          <div class="cal-day" style="color:var(--muted)"></div>
+          <!-- Week 2: days 1-7 -->
+          <div class="cal-day done">1</div>
+          <div class="cal-day done">2</div>
+          <div class="cal-day done">3</div>
+          <div class="cal-day done">4</div>
+          <div class="cal-day done">5</div>
+          <div class="cal-day done">6</div>
+          <div class="cal-day">7</div>
+          <!-- Week 3: days 8-14 -->
+          <div class="cal-day done">8</div>
+          <div class="cal-day done">9</div>
+          <div class="cal-day done">10</div>
+          <div class="cal-day done">11</div>
+          <div class="cal-day done">12</div>
+          <div class="cal-day done">13</div>
+          <div class="cal-day done">14</div>
+          <!-- Week 4: days 15-21 -->
+          <div class="cal-day done">15</div>
+          <div class="cal-day done">16</div>
+          <div class="cal-day today">17</div>
+          <div class="cal-day" style="color:var(--muted)">18</div>
+          <div class="cal-day" style="color:var(--muted)">19</div>
+          <div class="cal-day" style="color:var(--muted)">20</div>
+          <div class="cal-day" style="color:var(--muted)">21</div>
+          <!-- Week 5: days 22-28 -->
+          <div class="cal-day" style="color:var(--muted)">22</div>
+          <div class="cal-day" style="color:var(--muted)">23</div>
+          <div class="cal-day" style="color:var(--muted)">24</div>
+          <div class="cal-day" style="color:var(--muted)">25</div>
+          <div class="cal-day" style="color:var(--muted)">26</div>
+          <div class="cal-day" style="color:var(--muted)">27</div>
+          <div class="cal-day" style="color:var(--muted)">28</div>
+          <!-- Week 6: days 29-31 -->
+          <div class="cal-day" style="color:var(--muted)">29</div>
+          <div class="cal-day" style="color:var(--muted)">30</div>
+          <div class="cal-day" style="color:var(--muted)">31</div>
+        </div>
+      </div>
+
+      <!-- My Routines -->
+      <div class="my-routines">
+        <div class="section-header" style="padding:0 0 10px">
+          <div class="section-title">📦 내 루틴 보관함</div>
+        </div>
+        <div class="routine-item">
+          <div class="routine-item-icon">🏋️</div>
+          <div class="routine-item-info">
+            <div class="routine-item-name">등/이두 분할 루틴</div>
+            <div class="routine-item-meta">4종목 · 마지막 수행: 오늘</div>
+          </div>
+          <div class="routine-item-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+        </div>
+        <div class="routine-item">
+          <div class="routine-item-icon">⚡</div>
+          <div class="routine-item-info">
+            <div class="routine-item-name">5일 풀바디 프로그램</div>
+            <div class="routine-item-meta">6종목 · 마지막 수행: 3일 전</div>
+          </div>
+          <div class="routine-item-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+        </div>
+        <div class="routine-item">
+          <div class="routine-item-icon">🏃</div>
+          <div class="routine-item-info">
+            <div class="routine-item-name">인터벌 러닝 플랜</div>
+            <div class="routine-item-meta">저장한 루틴 · 5일 전</div>
+          </div>
+          <div class="routine-item-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+        </div>
+        <button class="new-routine-btn">＋ 새 루틴 만들기</button>
+      </div>
+
+      <!-- Post Grid -->
+      <div class="section-header" style="padding:0 16px 10px">
+        <div class="section-title">📸 내 오운완 기록</div>
+      </div>
+      <div class="posts-grid">
+        <div class="post-thumb" style="background-image:url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=200&h=200&fit=crop&q=70');background-size:cover;background-position:center"></div>
+        <div class="post-thumb" style="background-image:url('https://images.unsplash.com/photo-1571008887538-b36bb32f4571?w=200&h=200&fit=crop&q=70');background-size:cover;background-position:center"></div>
+        <div class="post-thumb" style="background-image:url('https://images.unsplash.com/photo-1517963879433-6ad2a56fcd82?w=200&h=200&fit=crop&q=70');background-size:cover;background-position:center"></div>
+        <div class="post-thumb" style="background-image:url('https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=200&h=200&fit=crop&q=70');background-size:cover;background-position:center"></div>
+        <div class="post-thumb" style="background-image:url('https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=200&h=200&fit=crop&q=70');background-size:cover;background-position:center"></div>
+        <div class="post-thumb" style="background-image:url('https://images.unsplash.com/photo-1502904550040-7534597429ae?w=200&h=200&fit=crop&q=70');background-size:cover;background-position:center"></div>
+        <div class="post-thumb" style="background-image:url('https://images.unsplash.com/photo-1549576490-b0b4f9e5b9f5?w=200&h=200&fit=crop&q=70');background-size:cover;background-position:center"></div>
+        <div class="post-thumb" style="background-image:url('https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?w=200&h=200&fit=crop&q=70');background-size:cover;background-position:center"></div>
+        <div class="post-thumb" style="background-image:url('https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=200&h=200&fit=crop&q=70');background-size:cover;background-position:center"></div>
+      </div>
+      <div style="height:20px"></div>
+    </div>
+
+  </div><!-- end screen-container -->
+
+  <!-- Bottom Nav -->
+  <div class="bottom-nav">
+    <div class="nav-item active" onclick="switchTab('home',this)" id="nav-home">
+      <div class="nav-icon">
+        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      </div>
+      <span class="nav-label">홈</span>
+    </div>
+    <div class="nav-item" onclick="switchTab('shorts',this)" id="nav-shorts">
+      <div class="nav-icon">
+        <svg viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+      </div>
+      <span class="nav-label">숏폼</span>
+    </div>
+    <div class="nav-center" onclick="switchTab('record',document.getElementById('nav-record'))">
+      <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    </div>
+    <div class="nav-item" onclick="switchTab('explore',this)" id="nav-explore">
+      <div class="nav-icon">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </div>
+      <span class="nav-label">탐색</span>
+    </div>
+    <div class="nav-item" onclick="switchTab('mypage',this)" id="nav-mypage">
+      <div class="nav-icon">
+        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </div>
+      <span class="nav-label">마이</span>
+    </div>
+  </div>
+
+  <!-- Record nav item (hidden, just for tab state) -->
+  <div id="nav-record" style="display:none"></div>
+
+  <!-- Routine Modal -->
+  <div class="modal-backdrop" id="routine-modal" onclick="closeModal(event)">
+    <div class="modal-sheet" id="routine-modal-content">
+      <div class="modal-handle"></div>
+      <div id="routine-modal-body"></div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+</div><!-- end phone-frame -->
+
+<script>
+// ===== TAB SWITCHING =====
+const tabs = ['home','shorts','record','explore','mypage'];
+let currentTab = 'home';
+
+function switchTab(tab, navEl) {
+  if (currentTab === tab) return;
+  const prev = document.getElementById('screen-' + currentTab);
+  const next = document.getElementById('screen-' + tab);
+
+  // Fade out
+  prev.style.opacity = '0';
+  setTimeout(() => {
+    prev.classList.remove('active');
+    prev.style.opacity = '';
+    next.classList.add('active');
+    next.style.opacity = '0';
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        next.style.opacity = '1';
+      });
+    });
+  }, 120);
+
+  // Update nav
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  if (navEl && navEl.classList) navEl.classList.add('active');
+
+  currentTab = tab;
+}
+
+// ===== CHEERUP =====
+function toggleCheerup(btn, base) {
+  const isActive = btn.classList.contains('active');
+  btn.classList.toggle('active');
+  const n = isActive ? base : base + 1;
+  btn.textContent = '💪 ' + n;
+  btn.style.transform = 'scale(1.15)';
+  setTimeout(() => btn.style.transform = '', 200);
+}
+
+// ===== CATEGORY SELECT =====
+function selectCat(el) {
+  el.closest('.category-grid').querySelectorAll('.category-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+// ===== FOLLOW =====
+function toggleFollow(btn) {
+  const following = btn.textContent === '팔로잉';
+  btn.textContent = following ? '팔로우' : '팔로잉';
+  btn.style.background = following ? 'linear-gradient(135deg,var(--primary),#0055cc)' : 'rgba(255,255,255,.1)';
+  btn.style.color = following ? '#fff' : 'var(--muted)';
+}
+
+// ===== FILTER =====
+function setFilter(el) {
+  el.closest('.shorts-filter').querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ===== SHORTS =====
+const shortsData = [
+  {bg:'s1',avatar:'💪',uname:'@jihun_lifts',title:'데드리프트 140kg 신기록 달성 🎉 오늘도 오운완!',tags:['#데드리프트','#헬스','#신기록'],cheerup:'1.2k',pb:35},
+  {bg:'s2',avatar:'🏃',uname:'@soyeon_run',title:'아침 5km 러닝 완주! 페이스 5\'29" 🏃‍♀️',tags:['#러닝','#아침운동','#5K'],cheerup:'847',pb:60},
+  {bg:'s3',avatar:'⚡',uname:'@minjun_cf',title:'오늘 WOD 18라운드 달성 💥 크로스핏은 역시 최고',tags:['#크로스핏','#WOD','#AMRAP'],cheerup:'2.1k',pb:80},
+  {bg:'s4',avatar:'🧘',uname:'@yerin_yoga',title:'모닝 요가 40분 플로우 완료 🌿 하루가 달라져요',tags:['#요가','#모닝루틴','#마음챙김'],cheerup:'634',pb:45},
+  {bg:'s5',avatar:'🚴',uname:'@hyunwoo_cycle',title:'한강 사이클 30km 완주 🚴 가을 바람 최고!',tags:['#사이클','#한강','#유산소'],cheerup:'389',pb:20},
+];
+let shortIdx = 0;
+
+function updateShorts() {
+  const s = shortsData[shortIdx];
+  document.getElementById('shorts-bg').className = 'shorts-bg ' + s.bg;
+  document.getElementById('shorts-avatar').textContent = s.avatar;
+  document.getElementById('shorts-uname').textContent = s.uname;
+  document.getElementById('shorts-title').textContent = s.title;
+  document.getElementById('shorts-cheerup').textContent = s.cheerup;
+  document.getElementById('shorts-pb').style.width = s.pb + '%';
+  const tagsEl = document.getElementById('shorts-tags');
+  tagsEl.innerHTML = s.tags.map(t => `<span class="chip">${t}</span>`).join('');
+}
+
+function nextShort() {
+  shortIdx = (shortIdx + 1) % shortsData.length;
+  const card = document.querySelector('.shorts-card');
+  card.style.opacity = '0';
+  card.style.transform = 'translateY(-30px)';
+  setTimeout(() => {
+    updateShorts();
+    card.style.transition = 'none';
+    card.style.transform = 'translateY(30px)';
+    card.style.opacity = '0';
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        card.style.transition = 'all .3s ease';
+        card.style.transform = 'translateY(0)';
+        card.style.opacity = '1';
+      });
+    });
+  }, 200);
+}
+
+function toggleShortsCheerup(el, e) {
+  e.stopPropagation();
+  el.style.background = 'rgba(255,77,77,.3)';
+  setTimeout(() => el.style.background = 'rgba(255,255,255,.15)', 300);
+}
+
+// ===== ROUTINE MODAL =====
+const routines = {
+  jihun: {
+    title: '💪 등/이두 루틴 — 김지훈',
+    items: [
+      {name:'데드리프트', sets:[{s:3,r:5,w:'140kg'},{s:1,r:3,w:'150kg'}]},
+      {name:'렛풀다운', sets:[{s:4,r:10,w:'80kg'}]},
+      {name:'시티드로우', sets:[{s:4,r:12,w:'70kg'}]},
+      {name:'바벨컬', sets:[{s:3,r:12,w:'40kg'}]},
+    ]
+  },
+  soyeon: {
+    title: '🏃 아침 러닝 기록 — 박소연',
+    items: [
+      {name:'워밍업 걷기', sets:[{s:1,r:'5분',w:'2.5km/h'}]},
+      {name:'인터벌 러닝', sets:[{s:5,r:'3분',w:'12km/h'},{s:5,r:'1분',w:'8km/h'}]},
+      {name:'쿨다운 스트레칭', sets:[{s:1,r:'5분',w:''}]},
+    ]
+  },
+  minjun: {
+    title: '⚡ 크로스핏 WOD — 이민준',
+    items: [
+      {name:'버피 점프', sets:[{s:1,r:'20회',w:''}]},
+      {name:'케틀벨 스윙', sets:[{s:1,r:'15회',w:'24kg'}]},
+      {name:'박스 점프', sets:[{s:1,r:'10회',w:''}]},
+      {name:'링 딥스', sets:[{s:1,r:'8회',w:''}]},
+      {name:'AMRAP 18라운드', sets:[{s:1,r:'45분',w:''}]},
+    ]
+  },
+  yerin: {
+    title: '🧘 모닝 요가 플로우 — 최예린',
+    items: [
+      {name:'고양이-소 자세', sets:[{s:1,r:'10회',w:''}]},
+      {name:'다운독', sets:[{s:1,r:'5호흡',w:''}]},
+      {name:'워리어1', sets:[{s:1,r:'좌우 30초',w:''}]},
+      {name:'트리 포즈', sets:[{s:1,r:'좌우 30초',w:''}]},
+      {name:'차일드 포즈', sets:[{s:1,r:'1분',w:''}]},
+      {name:'사바사나', sets:[{s:1,r:'5분',w:''}]},
+    ]
+  }
+};
+
+function openRoutineModal(key) {
+  const data = routines[key];
+  if (!data) return;
+  const body = document.getElementById('routine-modal-body');
+  let html = `<div class="modal-title">${data.title}</div>`;
+  data.items.forEach((item, i) => {
+    html += `<div class="routine-detail-item">
+      <div class="rd-num">${i+1}</div>
+      <div class="rd-name">${item.name}</div>
+      <div class="rd-sets">`;
+    item.sets.forEach(set => {
+      const parts = [];
+      if (set.s && set.s !== 1) parts.push(`${set.s}세트`);
+      if (set.r) parts.push(set.r);
+      if (set.w) parts.push(set.w);
+      html += `<span class="rd-set-chip">${parts.join(' × ')}</span>`;
+    });
+    html += `</div></div>`;
+  });
+  body.innerHTML = html;
+  document.getElementById('routine-modal').classList.add('visible');
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById('routine-modal')) {
+    document.getElementById('routine-modal').classList.remove('visible');
+  }
+}
+
+// ===== RECORD SUBMIT =====
+function submitRecord() {
+  showToast('🏆 오운완 완료! 🔥 24일 연속!');
+  setTimeout(() => switchTab('home', document.getElementById('nav-home')), 1500);
+}
+
+// ===== ADD EXERCISE =====
+function addExercise() {
+  const section = document.querySelector('.routine-section');
+  const btn = section.querySelector('.add-exercise-btn');
+  const row = document.createElement('div');
+  row.className = 'routine-row';
+  const exs = ['레그프레스','숄더프레스','케이블로우','인클라인프레스','레터럴레이즈'];
+  const name = exs[Math.floor(Math.random()*exs.length)];
+  const sets = Math.floor(Math.random()*2)+3;
+  const reps = Math.floor(Math.random()*5+8);
+  const weight = (Math.floor(Math.random()*6+4)*10);
+  row.innerHTML = `<div class="routine-name">${name}</div><div class="routine-details"><span class="routine-tag">${sets}세트</span><span class="routine-tag">${reps}회</span><span class="routine-tag">${weight}kg</span></div>`;
+  row.style.opacity = '0';
+  row.style.transform = 'translateY(-10px)';
+  section.insertBefore(row, btn);
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      row.style.transition = 'all .3s ease';
+      row.style.opacity = '1';
+      row.style.transform = 'translateY(0)';
+    });
+  });
+}
+
+// ===== TOAST =====
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// Splash
+const splash = document.getElementById('splash');
+setTimeout(() => splash.classList.add('hide'), 1800);
+setTimeout(() => splash.style.display = 'none', 2350);
+
+// Init
+updateShorts();
+</script>
+</body>
+</html>
